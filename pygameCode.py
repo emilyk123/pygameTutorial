@@ -6,6 +6,7 @@ def display_score():
     score_surface = test_font.render(f'Score: {current_time}',False,(64,64,64))
     score_rectangle = score_surface.get_rect(center = (400,50))
     screen.blit(score_surface,score_rectangle)
+    return current_time
 
 # display surface is the main window the player can see, only can have one and always visable
 # use regular surfaces to put images on the display surface (imported image, color, text)
@@ -16,8 +17,9 @@ screen = pygame.display.set_mode((800,400)) # display surface, window player wil
 pygame.display.set_caption('Runner') # adds title to game window
 clock = pygame.time.Clock()
 test_font = pygame.font.Font('font/Pixeltype.ttf',50) # (font type, font size), None - default font
-game_active = True
+game_active = False
 start_time = 0
+score = 0
 
 sky_surface = pygame.image.load('graphics/Sky.png').convert() # converts image into something pygame can use more easily
 ground_surface = pygame.image.load('graphics/ground.png').convert()
@@ -32,6 +34,17 @@ player_surface = pygame.image.load('graphics/Player/player_walk_1.png').convert_
 # rectangles making positioning images on game window easier, set origin point in different spot, not just top left
 player_rectangle = player_surface.get_rect(midbottom = (80,300))
 player_gravity = 0
+
+# Intro screen
+player_stand = pygame.image.load('graphics/Player/player_stand.png').convert_alpha()
+player_stand = pygame.transform.rotozoom(player_stand,0,2) # arugments - surface, angle, scale
+player_stand_rectangle = player_stand.get_rect(center = (400,200))
+
+game_title = test_font.render('Pixel Runner',False,(111,196,169))
+game_title_rectangle = game_title.get_rect(center = (400,80))
+
+game_message = test_font.render('Press space to run',False,(111,196,169))
+game_message_rectangle = game_message.get_rect(center = (400,320))
 
 # use while true loop so window doesn't disappear right away
 # use clock object so there is a consistant frame rate
@@ -68,7 +81,7 @@ while True:
         # pygame.draw.rect(screen,(169,211,219),score_rectangle) # arguments - surface, color, rectangle (optional - width and others)
         # pygame.draw.rect(screen,(169,211,219),score_rectangle,6) # only draws border and not the middle too
         # screen.blit(score_surface,score_rectangle)
-        display_score()
+        score = display_score()
 
         #Snail
         snail_rectangle.x -= 4 # move the rectangle that contains the surface
@@ -85,7 +98,15 @@ while True:
         if snail_rectangle.colliderect(player_rectangle):
             game_active = False
     else:
-        screen.fill((0,255,0))
+        screen.fill((94,129,162))
+        screen.blit(player_stand,player_stand_rectangle)
+
+        score_message = test_font.render(f'Your score: {score}',False,(111,196,169))
+        score_message_rectangle = score_message.get_rect(center = (400,330))
+        screen.blit(game_title,game_title_rectangle)
+
+        if score == 0: screen.blit(game_message,game_message_rectangle)
+        else: screen.blit(score_message,score_message_rectangle)
 
         # update everything
     pygame.display.update() # updates display surface made before loop
